@@ -111,9 +111,9 @@ body.debug .route-hotspot{outline:2px dashed #ffea00;background:rgba(255,234,0,.
 .map-brand-logo-tag,.map-brand-title-tag,.map-hint-overlay,.map-location-pill{background:rgba(255,255,255,.96);border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.18);backdrop-filter:blur(2px)}
 .map-brand-logo-tag{width:136px;padding:10px 12px;display:flex;align-items:center;justify-content:center}
 .map-brand-logo-tag img{display:block;width:106%;height:auto;max-width:106%}
-.map-brand-title-tag{padding:8px 12px;color:#28439b;font-size:18px;line-height:1;font-weight:900;letter-spacing:-.02em}
+.map-brand-title-tag{width:128px;box-sizing:border-box;padding:8px 12px;color:#28439b;font-size:18px;line-height:1;font-weight:900;letter-spacing:-.02em;text-align:center}
 .map-hint-overlay{position:absolute;right:64px;top:10px;z-index:45;padding:9px 12px;color:#28439b;font-size:13px;font-weight:800;line-height:1.1;white-space:nowrap}
-.map-location-pill{position:static;z-index:45;padding:7px 10px;font-size:10px;color:#28439b;font-weight:800;white-space:nowrap;display:none;align-items:center;gap:5px;align-self:flex-start}
+.map-location-pill{position:static;z-index:45;width:128px;min-height:34px;box-sizing:border-box;padding:8px 12px;font-size:10px;color:#28439b!important;font-weight:800;white-space:nowrap;display:none;align-items:center;justify-content:center;gap:5px;align-self:flex-start}
 .map-location-pill.is-visible{display:inline-flex}
 
 .cruzy-map-cta{
@@ -801,7 +801,7 @@ const MAP_LABELS={
   "MAJA Puerto Paraíso":{text:"MAJA Puerto Paraíso",x:1280,y:304},
   "Hard Rock Cafe Cabo San Lucas":{text:"Hard Rock Cafe",x:1060,y:430},
   "#CABO Sign 1":{text:"#CABO Sculpture 1",x:1260,y:1250},
-  "ENVA Tours":{text:"ENVA Tours",x:790,y:380},
+  "ENVA Tours":{text:"ENVA Tours",x:1050,y:380},
   "The Nowhere Bar":{text:"Nowhere Bar",x:790,y:457},
   "Marina Golden Zone":{text:"Marina Golden Zone",x:1235,y:525},
   "SPLASH / SKYBAR":{text:"SKYBAR",x:643,y:505},
