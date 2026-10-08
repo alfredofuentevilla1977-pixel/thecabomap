@@ -60,11 +60,13 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans
 .custom-map-icon.info-icon{background:#28439b}
 .custom-map-icon.restroom-icon{background:#0ea5e9;width:2.8%;z-index:5}
 .custom-map-icon svg{width:72%;height:72%;display:block;stroke:#fff;fill:none;stroke-width:2.35;stroke-linecap:round;stroke-linejoin:round}
-.custom-map-icon.premium-partner{overflow:visible;box-shadow:0 0 0 2px rgba(255,176,0,.9),0 0 8px 2px rgba(255,176,0,.42),0 1px 3px rgba(0,0,0,.22);transition:transform .22s ease,box-shadow .22s ease;will-change:transform}
-.custom-map-icon.premium-partner.premium-active{transform:translate(-50%,-50%) scale(1.5);z-index:30;box-shadow:0 0 0 4px rgba(255,191,0,1),0 0 26px 12px rgba(255,176,0,.88),0 3px 10px rgba(0,0,0,.32)}
+.custom-map-icon.premium-partner,.mango-hotspot.premium-partner{overflow:visible;box-shadow:0 0 0 2px rgba(255,176,0,.9),0 0 8px 2px rgba(255,176,0,.42),0 1px 3px rgba(0,0,0,.22);transition:transform .22s ease,box-shadow .22s ease;will-change:transform}
+.custom-map-icon.premium-partner.premium-active,.mango-hotspot.premium-partner.premium-active{transform:translate(-50%,-50%) scale(1.5);z-index:30;box-shadow:0 0 0 4px rgba(255,191,0,1),0 0 26px 12px rgba(255,176,0,.88),0 3px 10px rgba(0,0,0,.32)}
 .map-label{transition:transform .22s ease,box-shadow .22s ease,background .22s ease}
 .map-label.premium-label-active{transform:translate(-50%,-50%) scale(1.5)!important;z-index:31;background:rgba(255,255,255,1);box-shadow:0 0 0 3px rgba(255,191,0,.98),0 0 22px 9px rgba(255,176,0,.68),0 3px 10px rgba(0,0,0,.28)}
 .map-label.water-taxi-premium{border-color:rgba(255,176,0,.98);box-shadow:0 0 0 2px rgba(255,191,0,.88),0 0 10px 3px rgba(255,176,0,.38),0 1px 4px rgba(0,0,0,.20)}
+.map-label.water-taxi-premium{display:inline-flex;align-items:center;gap:7px}
+.map-label .water-taxi-label-icon{width:22px;height:22px;flex:0 0 22px;display:block;stroke:#2563eb;fill:none;stroke-width:2.35;stroke-linecap:round;stroke-linejoin:round}
 
 .hotspot:focus-visible{outline:3px solid #fff;box-shadow:0 0 0 6px rgba(14,165,233,.75)}
 .hotspot::after{content:"";position:absolute;inset:7px;border-radius:999px;border:2px solid transparent}
@@ -827,7 +829,7 @@ const customMapIcons = {
 
 
 const PIN_OFFSET_X=501, PIN_OFFSET_Y=0;
-const PREMIUM_SEQUENCE=["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","Marina Golden Zone","#CABO Sign 1","#CABO Sign 2","Water Taxi to Mango Deck"];
+const PREMIUM_SEQUENCE=["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","Marina Golden Zone","#CABO Sign 1","#CABO Sign 2","Mango Deck","Water Taxi to Mango Deck","Walking Routes"];
 const PREMIUM_ICON_PLACES=new Set(["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","Marina Golden Zone","#CABO Sign 1","#CABO Sign 2"]);
 const premiumIconEls=new Map();
 DATA.pins.forEach((p)=>{
@@ -849,38 +851,35 @@ let premiumSequenceTimer=null;
 function getPremiumLabel(name){
   return [...document.querySelectorAll('.map-label')].find(el=>el.dataset.place===name)||null;
 }
-function runPremiumSequence(index=0){
-  const name=PREMIUM_SEQUENCE[index%PREMIUM_SEQUENCE.length];
-  const icon=premiumIconEls.get(name)||null;
-  const label=getPremiumLabel(name);
-  document.querySelectorAll('.custom-map-icon.premium-active').forEach(el=>el.classList.remove('premium-active'));
-  document.querySelectorAll('.map-label.premium-label-active').forEach(el=>el.classList.remove('premium-label-active'));
-  if(icon) icon.classList.add('premium-active');
-  if(label) label.classList.add('premium-label-active');
-  premiumSequenceTimer=setTimeout(()=>{
-    if(icon) icon.classList.remove('premium-active');
-    if(label) label.classList.remove('premium-label-active');
-    premiumSequenceTimer=setTimeout(()=>runPremiumSequence(index+1),180);
-  },2000);
-}
 const walkingRouteLabel=document.querySelector('.walking-route-label');
 const walkingRouteLayer=document.querySelector('.walking-route-layer');
-let walkingRouteLabelTimer=null;
-function runWalkingRouteLabel(){
-  if(!walkingRouteLabel) return;
-  walkingRouteLabel.classList.add('walking-route-active');
-  if(walkingRouteLayer) walkingRouteLayer.classList.add('walking-route-active');
-  walkingRouteLabelTimer=setTimeout(()=>{
-    walkingRouteLabel.classList.remove('walking-route-active');
-    if(walkingRouteLayer) walkingRouteLayer.classList.remove('walking-route-active');
-    walkingRouteLabelTimer=setTimeout(runWalkingRouteLabel,10000);
-  },2000);
+function clearPremiumSpotlights(){
+  document.querySelectorAll('.custom-map-icon.premium-active,.mango-hotspot.premium-active').forEach(el=>el.classList.remove('premium-active'));
+  document.querySelectorAll('.map-label.premium-label-active').forEach(el=>el.classList.remove('premium-label-active'));
+  if(walkingRouteLabel) walkingRouteLabel.classList.remove('walking-route-active');
+  if(walkingRouteLayer) walkingRouteLayer.classList.remove('walking-route-active');
+}
+function runPremiumSequence(index=0){
+  clearPremiumSpotlights();
+  const name=PREMIUM_SEQUENCE[index%PREMIUM_SEQUENCE.length];
+  if(name==='Walking Routes'){
+    if(walkingRouteLabel) walkingRouteLabel.classList.add('walking-route-active');
+    if(walkingRouteLayer) walkingRouteLayer.classList.add('walking-route-active');
+  }else{
+    const icon=name==='Mango Deck' ? mangoBtn : (premiumIconEls.get(name)||null);
+    const label=getPremiumLabel(name);
+    if(icon) icon.classList.add('premium-active');
+    if(label) label.classList.add('premium-label-active');
+  }
+  premiumSequenceTimer=setTimeout(()=>{
+    clearPremiumSpotlights();
+    premiumSequenceTimer=setTimeout(()=>runPremiumSequence(index+1),180);
+  },3000);
 }
 let mapAnimationsStarted=false;
 function startMapAnimations(){
   if(mapAnimationsStarted) return;
   mapAnimationsStarted=true;
-  runWalkingRouteLabel();
   premiumSequenceTimer=setTimeout(()=>runPremiumSequence(0),450);
 }
 
@@ -953,7 +952,7 @@ DATA.pins.forEach((p)=>{
 
 const mangoBtn=document.createElement('button');
 mangoBtn.type='button';
-mangoBtn.className='mango-hotspot';
+mangoBtn.className='mango-hotspot premium-partner';
 mangoBtn.style.left='1731.95px';
 mangoBtn.style.top='358.11px';
 mangoBtn.setAttribute('aria-label','Mango Deck');
@@ -963,7 +962,10 @@ mapCanvas.appendChild(mangoBtn);
 addMapLabel('Mango Deck',{text:'Mango Deck',x:1580,y:285},1731.95,358.11,()=>openCard(DATA.mango,true));
 addMapLabel('Water Taxi to Mango Deck',{text:'Water Taxi to Mango Deck',x:1229.3,y:1047.25,rotate:9.5},1229.3,1047.25,()=>openCard(DATA.mango,true));
 const waterTaxiPremiumLabel=getPremiumLabel('Water Taxi to Mango Deck');
-if(waterTaxiPremiumLabel) waterTaxiPremiumLabel.classList.add('water-taxi-premium');
+if(waterTaxiPremiumLabel){
+  waterTaxiPremiumLabel.classList.add('water-taxi-premium');
+  waterTaxiPremiumLabel.innerHTML='<svg class="water-taxi-label-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15h18l-2.4 3H5.4L3 15Z"/><path d="M7 15l2-5h4l2 5"/><path d="M13 10h4l2 5"/><path d="M9 8h5"/></svg><span>Water Taxi to Mango Deck</span>';
+}
 
 document.getElementById('mangoRoute').addEventListener('click',()=>openCard(DATA.mango,true));
 const waterRoutePath=document.getElementById('waterRoutePath');
