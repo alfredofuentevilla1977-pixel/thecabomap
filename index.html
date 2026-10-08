@@ -127,9 +127,9 @@ body.debug .route-hotspot{outline:2px dashed #ffea00;background:rgba(255,234,0,.
 .map-brand-logo-tag img{display:block;width:106%;height:auto;max-width:106%;transform-origin:center center;animation:caboLogoBlink 12s ease-in-out infinite}
 @keyframes caboLogoBlink{
   0%,16.7%,100%{opacity:1;transform:scale(1)}
-  4.2%{opacity:.38;transform:scale(1.20)}
+  4.2%{opacity:.38;transform:scale(1.10)}
   8.4%{opacity:1;transform:scale(1)}
-  12.6%{opacity:.38;transform:scale(1.20)}
+  12.6%{opacity:.38;transform:scale(1.10)}
 }
 .map-brand-title-tag{width:128px;box-sizing:border-box;padding:8px 12px;color:#28439b;font-size:18px;line-height:1;font-weight:900;letter-spacing:-.02em;text-align:center}
 .map-hint-overlay{position:absolute;right:64px;top:10px;z-index:45;padding:9px 12px;color:#28439b;font-size:13px;font-weight:800;line-height:1.1;white-space:nowrap}
@@ -592,8 +592,18 @@ function showView(name){
   directionsView.hidden=name!=='directions';
 }
 
+function normalizeOpenSheetScale(){
+  if(!sheet.classList.contains('open')) return;
+  const viewportScale=(window.visualViewport && Number.isFinite(window.visualViewport.scale)) ? window.visualViewport.scale : 1;
+  const inverseScale=1/Math.max(1,viewportScale);
+  sheet.style.transformOrigin='top left';
+  sheet.style.transform=inverseScale<0.999 ? `scale(${inverseScale})` : '';
+}
+
 function backToMap(){
   sheet.classList.remove('open');
+  sheet.style.transform='';
+  sheet.style.transformOrigin='';
   showView('detail');
   currentPlace=null;
   map.scrollIntoView({behavior:'smooth',block:'start'});
@@ -749,7 +759,11 @@ function openCard(p, route=false){
   }
   showView('detail');
   sheet.classList.add('open');
-  sheet.scrollIntoView({behavior:'smooth',block:'nearest'});
+  normalizeOpenSheetScale();
+  requestAnimationFrame(()=>{
+    normalizeOpenSheetScale();
+    sheet.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
 }
 
 
@@ -1107,6 +1121,10 @@ function resetContextZoomForResize(){
 }
 window.addEventListener('resize',()=>setTimeout(resetContextZoomForResize,80));
 window.addEventListener('orientationchange',()=>setTimeout(resetContextZoomForResize,180));
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',normalizeOpenSheetScale);
+  window.visualViewport.addEventListener('scroll',normalizeOpenSheetScale);
+}
 requestAnimationFrame(()=>{captureDetailFrame();applyContextDetail();});
 
 claimBtn.addEventListener('click',()=>{
