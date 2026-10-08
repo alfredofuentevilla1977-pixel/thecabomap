@@ -60,11 +60,8 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans
 .custom-map-icon.info-icon{background:#28439b}
 .custom-map-icon.restroom-icon{background:#0ea5e9;width:2.8%;z-index:5}
 .custom-map-icon svg{width:72%;height:72%;display:block;stroke:#fff;fill:none;stroke-width:2.35;stroke-linecap:round;stroke-linejoin:round}
-.custom-map-icon.premium-partner{overflow:visible;box-shadow:0 0 0 3px rgba(255,176,0,.98),0 0 14px 5px rgba(255,176,0,.72),0 1px 3px rgba(0,0,0,.22)}
-.custom-map-icon.premium-partner .premium-halo{position:absolute;inset:-10px;border:4px solid rgba(255,184,0,1);border-radius:50%;pointer-events:none;z-index:0;will-change:transform,opacity;animation:premiumPartnerPulse 1.25s ease-out infinite}
-.custom-map-icon.premium-partner .premium-halo.halo-2{animation-delay:.55s;border-color:rgba(255,213,79,.96)}
-.custom-map-icon.premium-partner svg{position:relative;z-index:1}
-@keyframes premiumPartnerPulse{0%{opacity:1;transform:scale(.72);box-shadow:0 0 0 0 rgba(255,176,0,.78)}65%{opacity:.38;transform:scale(1.42);box-shadow:0 0 18px 10px rgba(255,176,0,.26)}100%{opacity:0;transform:scale(1.62);box-shadow:0 0 28px 16px rgba(255,176,0,0)}}
+.custom-map-icon.premium-partner{overflow:visible;box-shadow:0 0 0 2px rgba(255,176,0,.9),0 0 8px 2px rgba(255,176,0,.42),0 1px 3px rgba(0,0,0,.22);transition:transform .22s ease,box-shadow .22s ease;will-change:transform}
+.custom-map-icon.premium-partner.premium-active{transform:translate(-50%,-50%) scale(1.5);z-index:30;box-shadow:0 0 0 4px rgba(255,191,0,1),0 0 26px 12px rgba(255,176,0,.88),0 3px 10px rgba(0,0,0,.32)}
 
 .hotspot:focus-visible{outline:3px solid #fff;box-shadow:0 0 0 6px rgba(14,165,233,.75)}
 .hotspot::after{content:"";position:absolute;inset:7px;border-radius:999px;border:2px solid transparent}
@@ -823,7 +820,9 @@ const customMapIcons = {
 
 
 const PIN_OFFSET_X=501, PIN_OFFSET_Y=0;
-const PREMIUM_PLACES=new Set(["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","Marina Golden Zone","#CABO Sign 1","#CABO Sign 2"]);
+const PREMIUM_SEQUENCE=["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","Marina Golden Zone","#CABO Sign 1","#CABO Sign 2"];
+const PREMIUM_PLACES=new Set(PREMIUM_SEQUENCE);
+const premiumIconEls=new Map();
 DATA.pins.forEach((p)=>{
   const cfg=customMapIcons[p.name];
   if(!cfg) return;
@@ -831,13 +830,27 @@ DATA.pins.forEach((p)=>{
   icon.className='custom-map-icon '+cfg.cls;
   if(PREMIUM_PLACES.has(p.name)){
     icon.classList.add('premium-partner');
-    icon.insertAdjacentHTML('afterbegin','<span class="premium-halo halo-1" aria-hidden="true"></span><span class="premium-halo halo-2" aria-hidden="true"></span>');
+    premiumIconEls.set(p.name,icon);
   }
   icon.style.left=(p.x+PIN_OFFSET_X+(p.mapDx||0))+'px';
   icon.style.top=(p.y+PIN_OFFSET_Y+(p.mapDy||0))+'px';
   icon.innerHTML=cfg.svg;
   mapCanvas.appendChild(icon);
 });
+
+let premiumSequenceTimer=null;
+function runPremiumSequence(index=0){
+  const name=PREMIUM_SEQUENCE[index%PREMIUM_SEQUENCE.length];
+  const icon=premiumIconEls.get(name);
+  if(!icon) return;
+  document.querySelectorAll('.custom-map-icon.premium-active').forEach(el=>el.classList.remove('premium-active'));
+  icon.classList.add('premium-active');
+  premiumSequenceTimer=setTimeout(()=>{
+    icon.classList.remove('premium-active');
+    premiumSequenceTimer=setTimeout(()=>runPremiumSequence(index+1),180);
+  },1000);
+}
+setTimeout(()=>runPremiumSequence(0),700);
 
 DATA.pins.forEach((p)=>{
   const b=document.createElement('button');
