@@ -115,6 +115,9 @@ body.debug .route-hotspot{outline:2px dashed #ffea00;background:rgba(255,234,0,.
 .walking-route-label.walking-route-active{font-size:43.5px;fill:#00e676;stroke-width:8px;filter:drop-shadow(0 0 6px rgba(0,200,83,.9))}
 .water-halo{stroke:rgba(255,255,255,.97);stroke-width:14px;stroke-dasharray:24 15}
 .water-core{stroke:#0ea5e9;stroke-width:8px;stroke-dasharray:24 15}
+.water-halo,.water-core{transition:stroke-width .22s ease,filter .22s ease}
+.water-route-layer.water-route-active .water-halo{stroke-width:21px;filter:drop-shadow(0 0 5px rgba(255,255,255,.7))}
+.water-route-layer.water-route-active .water-core{stroke-width:12px;filter:drop-shadow(0 0 7px rgba(14,165,233,.8))}
 .water-hit{stroke:transparent;stroke-width:30px;pointer-events:stroke;cursor:pointer}
 .zoom-controls{position:absolute;right:10px;top:10px;z-index:40;display:flex;flex-direction:column;gap:6px}
 .zoom-controls button{width:42px;height:42px;border:0;border-radius:12px;background:rgba(255,255,255,.96);color:#111827;font-size:25px;font-weight:800;box-shadow:0 2px 12px rgba(0,0,0,.25);cursor:pointer}
@@ -829,7 +832,7 @@ const customMapIcons = {
 
 
 const PIN_OFFSET_X=501, PIN_OFFSET_Y=0;
-const PREMIUM_SEQUENCE=["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","Marina Golden Zone","#CABO Sign 1","#CABO Sign 2","Mango Deck","Water Taxi to Mango Deck","Walking Routes"];
+const PREMIUM_SEQUENCE=["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","Marina Golden Zone","#CABO Sign 1","#CABO Sign 2","Water Taxi to Mango Deck","Walking Routes"];
 const PREMIUM_ICON_PLACES=new Set(["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","Marina Golden Zone","#CABO Sign 1","#CABO Sign 2"]);
 const premiumIconEls=new Map();
 DATA.pins.forEach((p)=>{
@@ -853,11 +856,13 @@ function getPremiumLabel(name){
 }
 const walkingRouteLabel=document.querySelector('.walking-route-label');
 const walkingRouteLayer=document.querySelector('.walking-route-layer');
+const waterRouteLayer=document.querySelector('.water-route-layer');
 function clearPremiumSpotlights(){
   document.querySelectorAll('.custom-map-icon.premium-active,.mango-hotspot.premium-active').forEach(el=>el.classList.remove('premium-active'));
   document.querySelectorAll('.map-label.premium-label-active').forEach(el=>el.classList.remove('premium-label-active'));
   if(walkingRouteLabel) walkingRouteLabel.classList.remove('walking-route-active');
   if(walkingRouteLayer) walkingRouteLayer.classList.remove('walking-route-active');
+  if(waterRouteLayer) waterRouteLayer.classList.remove('water-route-active');
 }
 function runPremiumSequence(index=0){
   clearPremiumSpotlights();
@@ -866,10 +871,11 @@ function runPremiumSequence(index=0){
     if(walkingRouteLabel) walkingRouteLabel.classList.add('walking-route-active');
     if(walkingRouteLayer) walkingRouteLayer.classList.add('walking-route-active');
   }else{
-    const icon=name==='Mango Deck' ? mangoBtn : (premiumIconEls.get(name)||null);
+    const icon=premiumIconEls.get(name)||null;
     const label=getPremiumLabel(name);
     if(icon) icon.classList.add('premium-active');
     if(label) label.classList.add('premium-label-active');
+    if(name==='Water Taxi to Mango Deck' && waterRouteLayer) waterRouteLayer.classList.add('water-route-active');
   }
   premiumSequenceTimer=setTimeout(()=>{
     clearPremiumSpotlights();
@@ -952,7 +958,7 @@ DATA.pins.forEach((p)=>{
 
 const mangoBtn=document.createElement('button');
 mangoBtn.type='button';
-mangoBtn.className='mango-hotspot premium-partner';
+mangoBtn.className='mango-hotspot';
 mangoBtn.style.left='1731.95px';
 mangoBtn.style.top='358.11px';
 mangoBtn.setAttribute('aria-label','Mango Deck');
