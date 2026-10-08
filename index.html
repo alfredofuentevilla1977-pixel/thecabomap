@@ -60,6 +60,9 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans
 .custom-map-icon.info-icon{background:#28439b}
 .custom-map-icon.restroom-icon{background:#0ea5e9;width:2.8%;z-index:5}
 .custom-map-icon svg{width:72%;height:72%;display:block;stroke:#fff;fill:none;stroke-width:2.35;stroke-linecap:round;stroke-linejoin:round}
+.custom-map-icon.premium-partner{overflow:visible}
+.custom-map-icon.premium-partner::before{content:"";position:absolute;inset:-7px;border:2px solid rgba(245,158,11,.92);border-radius:50%;pointer-events:none;animation:premiumPartnerPulse 1.6s ease-out infinite}
+@keyframes premiumPartnerPulse{0%{opacity:.92;transform:scale(.78);box-shadow:0 0 0 0 rgba(245,158,11,.42)}70%{opacity:0;transform:scale(1.30);box-shadow:0 0 0 10px rgba(245,158,11,0)}100%{opacity:0;transform:scale(1.30);box-shadow:0 0 0 10px rgba(245,158,11,0)}}
 
 .hotspot:focus-visible{outline:3px solid #fff;box-shadow:0 0 0 6px rgba(14,165,233,.75)}
 .hotspot::after{content:"";position:absolute;inset:7px;border-radius:999px;border:2px solid transparent}
@@ -187,6 +190,8 @@ body.debug .route-hotspot{outline:2px dashed #ffea00;background:rgba(255,234,0,.
 .map-wrap.overview-mode .map-label-leader{height:5px}
 .diamonds-connector{position:absolute;left:719.3px;top:797px;width:4px;height:18px;z-index:5;background:rgba(255,255,255,.98);border-radius:99px;box-shadow:0 0 0 1px rgba(15,23,42,.22),0 1px 4px rgba(0,0,0,.18);pointer-events:none}
 .map-wrap.overview-mode .diamonds-connector{width:5px}
+.orientation-hint{position:fixed;left:50%;bottom:72px;z-index:90;transform:translate(-50%,12px);opacity:0;pointer-events:none;max-width:calc(100vw - 32px);padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.97);color:#28439b;box-shadow:0 6px 24px rgba(0,0,0,.22);font:800 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;text-align:center;white-space:nowrap;transition:opacity .18s ease,transform .18s ease}
+.orientation-hint.is-visible{opacity:1;transform:translate(-50%,0)}
 .map-wrap.detail-mode .map-label[data-place="Mango Deck"],
 .map-wrap.detail-mode .map-label-leader[data-place="Mango Deck"]{display:none}
 
@@ -337,6 +342,7 @@ body.debug .route-hotspot{outline:2px dashed #ffea00;background:rgba(255,234,0,.
       <button id="zoomIn" type="button" aria-label="Zoom in">+</button>
       <button id="zoomOut" type="button" aria-label="Zoom out">−</button>
     </div>
+    <div class="orientation-hint" id="orientationHint" role="status">Turn your phone horizontally for a better map view.</div>
   </div>
 <section class="sheet" id="sheet" aria-live="polite">
   <div class="handle"></div>
@@ -815,11 +821,13 @@ const customMapIcons = {
 
 
 const PIN_OFFSET_X=501, PIN_OFFSET_Y=0;
+const PREMIUM_PLACES=new Set(["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","#CABO Sign 1","#CABO Sign 2"]);
 DATA.pins.forEach((p)=>{
   const cfg=customMapIcons[p.name];
   if(!cfg) return;
   const icon=document.createElement('div');
   icon.className='custom-map-icon '+cfg.cls;
+  if(PREMIUM_PLACES.has(p.name)) icon.classList.add('premium-partner');
   icon.style.left=(p.x+PIN_OFFSET_X+(p.mapDx||0))+'px';
   icon.style.top=(p.y+PIN_OFFSET_Y+(p.mapDy||0))+'px';
   icon.innerHTML=cfg.svg;
@@ -1004,6 +1012,15 @@ function zoomInSmart(){
   smartZoomIndex=Math.min(SMART_ZOOM_LEVELS.length-1,smartZoomIndex+1);
   applyContextDetail();
 }
+let orientationHintTimer=null;
+function showOrientationHint(){
+  if(!window.matchMedia('(max-width: 720px) and (orientation: portrait)').matches) return;
+  const hint=document.getElementById('orientationHint');
+  if(!hint) return;
+  hint.classList.add('is-visible');
+  if(orientationHintTimer) clearTimeout(orientationHintTimer);
+  orientationHintTimer=setTimeout(()=>hint.classList.remove('is-visible'),2800);
+}
 function zoomOutSmart(){
   if(mapMode==='overview') return;
   if(smartZoomIndex>0){
@@ -1011,6 +1028,7 @@ function zoomOutSmart(){
     applyContextDetail();
   }else{
     applyOverview();
+    showOrientationHint();
   }
 }
 
