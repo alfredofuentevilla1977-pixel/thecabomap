@@ -105,8 +105,10 @@ body.debug .route-hotspot{outline:2px dashed #ffea00;background:rgba(255,234,0,.
 
 .route-overlay{position:absolute;left:0;top:0;width:2300px;height:1491px;z-index:2;overflow:visible;pointer-events:none}
 .route-overlay polyline{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-.walking-halo{stroke:rgba(255,255,255,.97);stroke-width:18px}
-.walking-core{stroke:#00c853;stroke-width:11px}
+.walking-halo{stroke:rgba(255,255,255,.97);stroke-width:18px;transition:stroke-width .22s ease,filter .22s ease}
+.walking-core{stroke:#00c853;stroke-width:11px;transition:stroke-width .22s ease,filter .22s ease}
+.walking-route-layer.walking-route-active .walking-halo{stroke-width:27px;filter:drop-shadow(0 0 5px rgba(255,255,255,.72))}
+.walking-route-layer.walking-route-active .walking-core{stroke-width:16.5px;filter:drop-shadow(0 0 7px rgba(0,200,83,.78))}
 .walking-route-label{fill:#00c853;stroke:#fff;stroke-width:7px;paint-order:stroke fill;font:800 29px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;letter-spacing:-.02em;pointer-events:none;transition:font-size .22s ease,filter .22s ease,fill .22s ease,stroke-width .22s ease}
 .walking-route-label.walking-route-active{font-size:43.5px;fill:#00e676;stroke-width:8px;filter:drop-shadow(0 0 6px rgba(0,200,83,.9))}
 .water-halo{stroke:rgba(255,255,255,.97);stroke-width:14px;stroke-dasharray:24 15}
@@ -862,12 +864,15 @@ function runPremiumSequence(index=0){
   },2000);
 }
 const walkingRouteLabel=document.querySelector('.walking-route-label');
+const walkingRouteLayer=document.querySelector('.walking-route-layer');
 let walkingRouteLabelTimer=null;
 function runWalkingRouteLabel(){
   if(!walkingRouteLabel) return;
   walkingRouteLabel.classList.add('walking-route-active');
+  if(walkingRouteLayer) walkingRouteLayer.classList.add('walking-route-active');
   walkingRouteLabelTimer=setTimeout(()=>{
     walkingRouteLabel.classList.remove('walking-route-active');
+    if(walkingRouteLayer) walkingRouteLayer.classList.remove('walking-route-active');
     walkingRouteLabelTimer=setTimeout(runWalkingRouteLabel,10000);
   },2000);
 }
