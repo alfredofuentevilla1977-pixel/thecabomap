@@ -103,7 +103,6 @@ body.debug .route-hotspot{outline:2px dashed #ffea00;background:rgba(255,234,0,.
 .walking-halo{stroke:rgba(255,255,255,.97);stroke-width:18px}
 .walking-core{stroke:#00c853;stroke-width:11px}
 .walking-route-label{fill:#00c853;stroke:#fff;stroke-width:7px;paint-order:stroke fill;font:800 29px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;letter-spacing:-.02em;pointer-events:none}
-.water-route-label{fill:#0ea5e9;stroke:#fff;stroke-width:7px;paint-order:stroke fill;font:800 29px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;letter-spacing:-.02em;pointer-events:none}
 .water-halo{stroke:rgba(255,255,255,.97);stroke-width:14px;stroke-dasharray:24 15}
 .water-core{stroke:#0ea5e9;stroke-width:8px;stroke-dasharray:24 15}
 .water-hit{stroke:transparent;stroke-width:30px;pointer-events:stroke;cursor:pointer}
@@ -326,7 +325,6 @@ body.debug .route-hotspot{outline:2px dashed #ffea00;background:rgba(255,234,0,.
           <polyline class="water-halo" points="984.73,1277.79 968.40,1246.83 954.90,1214.96 943.35,1192.43 937.92,1175.22 931.26,1157.74 938.96,1145.89 949.30,1136.31 978.41,1128.99 1002.87,1119.22 1028.32,1104.44 1040.14,1090.77 1049.66,1075.68 1060.64,1062.95 1071.82,1051.37 1089.54,1048.73 1114.67,1051.22 1148.19,1058.81 1183.86,1067.62 1211.03,1076.39 1254.44,1083.78 1289.42,1089.91 1320.84,1093.53 1357.99,1097.12 1400.64,1103.15 1446.80,1106.68 1482.81,1106.56 1525.30,1101.49 1557.63,1087.73 1583.92,1062.42 1616.47,1010.17 1639.38,962.54 1657.51,895.58 1672.48,826.41 1690.97,738.56 1706.17,662.11 1717.00,586.72 1724.46,512.94 1732.39,443.35 1732.30,374.64"/>
           <polyline class="water-core" points="984.73,1277.79 968.40,1246.83 954.90,1214.96 943.35,1192.43 937.92,1175.22 931.26,1157.74 938.96,1145.89 949.30,1136.31 978.41,1128.99 1002.87,1119.22 1028.32,1104.44 1040.14,1090.77 1049.66,1075.68 1060.64,1062.95 1071.82,1051.37 1089.54,1048.73 1114.67,1051.22 1148.19,1058.81 1183.86,1067.62 1211.03,1076.39 1254.44,1083.78 1289.42,1089.91 1320.84,1093.53 1357.99,1097.12 1400.64,1103.15 1446.80,1106.68 1482.81,1106.56 1525.30,1101.49 1557.63,1087.73 1583.92,1062.42 1616.47,1010.17 1639.38,962.54 1657.51,895.58 1672.48,826.41 1690.97,738.56 1706.17,662.11 1717.00,586.72 1724.46,512.94 1732.39,443.35 1732.30,374.64"/>
           <polyline class="water-hit" id="waterRoutePath" points="984.73,1277.79 968.40,1246.83 954.90,1214.96 943.35,1192.43 937.92,1175.22 931.26,1157.74 938.96,1145.89 949.30,1136.31 978.41,1128.99 1002.87,1119.22 1028.32,1104.44 1040.14,1090.77 1049.66,1075.68 1060.64,1062.95 1071.82,1051.37 1089.54,1048.73 1114.67,1051.22 1148.19,1058.81 1183.86,1067.62 1211.03,1076.39 1254.44,1083.78 1289.42,1089.91 1320.84,1093.53 1357.99,1097.12 1400.64,1103.15 1446.80,1106.68 1482.81,1106.56 1525.30,1101.49 1557.63,1087.73 1583.92,1062.42 1616.47,1010.17 1639.38,962.54 1657.51,895.58 1672.48,826.41 1690.97,738.56 1706.17,662.11 1717.00,586.72 1724.46,512.94 1732.39,443.35 1732.30,374.64"/>
-          <text class="water-route-label" x="1217" y="1049" text-anchor="middle" dominant-baseline="middle" transform="rotate(8.5 1217 1049)">Water Taxi to Mango Deck</text>
         </g>
       </svg>
       <div class="user-location" id="userLocation" aria-label="Your location"></div>
@@ -509,10 +507,10 @@ function startLiveLocation(){
     pos=>{
       hasLocationFix=true;
       const inside=placeUserLocation(pos.coords.latitude,pos.coords.longitude);
-      locationPill.textContent='● Live location';
+      locationPill.textContent='● Live Location';
       entryStatus.textContent=inside
-        ? 'Live location enabled — your position will update as you move.'
-        : 'Live location enabled. You are currently outside the mapped area.';
+        ? 'Live Location enabled — your position will update as you move.'
+        : 'Live Location enabled. You are currently outside the mapped area.';
       useLocationBtn.textContent='✓ LIVE LOCATION ENABLED';
       if(!enteredFromLocation){
         enteredFromLocation=true;
@@ -522,7 +520,7 @@ function startLiveLocation(){
     err=>{
       if(hasLocationFix){
         // Keep the last valid point visible during temporary GPS interruptions.
-        locationPill.textContent='● Live location';
+        locationPill.textContent='● Live Location';
         return;
       }
       if(geoWatchId!==null){
@@ -902,6 +900,7 @@ mangoBtn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v7"
 mangoBtn.addEventListener('click',()=>openCard(DATA.mango,true));
 mapCanvas.appendChild(mangoBtn);
 addMapLabel('Mango Deck',{text:'Mango Deck',x:1580,y:285},1731.95,358.11,()=>openCard(DATA.mango,true));
+addMapLabel('Water Taxi to Mango Deck',{text:'Water Taxi to Mango Deck',x:1289,y:1090},1289,1090,()=>openCard(DATA.mango,true));
 
 document.getElementById('mangoRoute').addEventListener('click',()=>openCard(DATA.mango,true));
 const waterRoutePath=document.getElementById('waterRoutePath');
