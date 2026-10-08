@@ -61,8 +61,9 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans
 .custom-map-icon.restroom-icon{background:#0ea5e9;width:2.8%;z-index:5}
 .custom-map-icon svg{width:72%;height:72%;display:block;stroke:#fff;fill:none;stroke-width:2.35;stroke-linecap:round;stroke-linejoin:round}
 .custom-map-icon.premium-partner{overflow:visible}
-.custom-map-icon.premium-partner::before{content:"";position:absolute;inset:-7px;border:2px solid rgba(245,158,11,.92);border-radius:50%;pointer-events:none;animation:premiumPartnerPulse 1.6s ease-out infinite}
-@keyframes premiumPartnerPulse{0%{opacity:.92;transform:scale(.78);box-shadow:0 0 0 0 rgba(245,158,11,.42)}70%{opacity:0;transform:scale(1.30);box-shadow:0 0 0 10px rgba(245,158,11,0)}100%{opacity:0;transform:scale(1.30);box-shadow:0 0 0 10px rgba(245,158,11,0)}}
+.custom-map-icon.premium-partner .premium-halo{position:absolute;inset:-8px;border:3px solid rgba(245,158,11,.96);border-radius:50%;pointer-events:none;z-index:0;will-change:transform,opacity;animation:premiumPartnerPulse 1.6s ease-out infinite}
+.custom-map-icon.premium-partner svg{position:relative;z-index:1}
+@keyframes premiumPartnerPulse{0%{opacity:.95;transform:scale(.82);box-shadow:0 0 0 0 rgba(245,158,11,.5)}72%{opacity:.08;transform:scale(1.34);box-shadow:0 0 0 12px rgba(245,158,11,0)}100%{opacity:0;transform:scale(1.34);box-shadow:0 0 0 12px rgba(245,158,11,0)}}
 
 .hotspot:focus-visible{outline:3px solid #fff;box-shadow:0 0 0 6px rgba(14,165,233,.75)}
 .hotspot::after{content:"";position:absolute;inset:7px;border-radius:999px;border:2px solid transparent}
@@ -821,13 +822,16 @@ const customMapIcons = {
 
 
 const PIN_OFFSET_X=501, PIN_OFFSET_Y=0;
-const PREMIUM_PLACES=new Set(["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","#CABO Sign 1","#CABO Sign 2"]);
+const PREMIUM_PLACES=new Set(["Cabo Wabo Cantina","Diamonds International","Hard Rock Cafe Cabo San Lucas","Marina Golden Zone","#CABO Sign 1","#CABO Sign 2"]);
 DATA.pins.forEach((p)=>{
   const cfg=customMapIcons[p.name];
   if(!cfg) return;
   const icon=document.createElement('div');
   icon.className='custom-map-icon '+cfg.cls;
-  if(PREMIUM_PLACES.has(p.name)) icon.classList.add('premium-partner');
+  if(PREMIUM_PLACES.has(p.name)){
+    icon.classList.add('premium-partner');
+    icon.insertAdjacentHTML('afterbegin','<span class="premium-halo" aria-hidden="true"></span>');
+  }
   icon.style.left=(p.x+PIN_OFFSET_X+(p.mapDx||0))+'px';
   icon.style.top=(p.y+PIN_OFFSET_Y+(p.mapDy||0))+'px';
   icon.innerHTML=cfg.svg;
