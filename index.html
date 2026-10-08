@@ -64,6 +64,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans
 .custom-map-icon.premium-partner.premium-active{transform:translate(-50%,-50%) scale(1.5);z-index:30;box-shadow:0 0 0 4px rgba(255,191,0,1),0 0 26px 12px rgba(255,176,0,.88),0 3px 10px rgba(0,0,0,.32)}
 .map-label{transition:transform .22s ease,box-shadow .22s ease,background .22s ease}
 .map-label.premium-label-active{transform:translate(-50%,-50%) scale(1.5)!important;z-index:31;background:rgba(255,255,255,1);box-shadow:0 0 0 3px rgba(255,191,0,.98),0 0 22px 9px rgba(255,176,0,.68),0 3px 10px rgba(0,0,0,.28)}
+.map-label.water-taxi-premium{border-color:rgba(255,176,0,.98);box-shadow:0 0 0 2px rgba(255,191,0,.88),0 0 10px 3px rgba(255,176,0,.38),0 1px 4px rgba(0,0,0,.20)}
 
 .hotspot:focus-visible{outline:3px solid #fff;box-shadow:0 0 0 6px rgba(14,165,233,.75)}
 .hotspot::after{content:"";position:absolute;inset:7px;border-radius:999px;border:2px solid transparent}
@@ -462,6 +463,7 @@ function enterMap(){
   requestAnimationFrame(()=>{
     try{ applyMapMode('detail',false); }catch(e){ console.warn('Map mode init:',e); }
   });
+  setTimeout(()=>{ try{ startMapAnimations(); }catch(e){ console.warn('Map animations:',e); } },520);
   setTimeout(()=>{
     try{ window.scrollTo(0,0); }catch(e){}
   },380);
@@ -859,8 +861,6 @@ function runPremiumSequence(index=0){
     premiumSequenceTimer=setTimeout(()=>runPremiumSequence(index+1),180);
   },2000);
 }
-setTimeout(()=>runPremiumSequence(0),700);
-
 const walkingRouteLabel=document.querySelector('.walking-route-label');
 let walkingRouteLabelTimer=null;
 function runWalkingRouteLabel(){
@@ -871,7 +871,13 @@ function runWalkingRouteLabel(){
     walkingRouteLabelTimer=setTimeout(runWalkingRouteLabel,10000);
   },2000);
 }
-setTimeout(runWalkingRouteLabel,900);
+let mapAnimationsStarted=false;
+function startMapAnimations(){
+  if(mapAnimationsStarted) return;
+  mapAnimationsStarted=true;
+  runWalkingRouteLabel();
+  premiumSequenceTimer=setTimeout(()=>runPremiumSequence(0),450);
+}
 
 DATA.pins.forEach((p)=>{
   const b=document.createElement('button');
@@ -951,6 +957,8 @@ mangoBtn.addEventListener('click',()=>openCard(DATA.mango,true));
 mapCanvas.appendChild(mangoBtn);
 addMapLabel('Mango Deck',{text:'Mango Deck',x:1580,y:285},1731.95,358.11,()=>openCard(DATA.mango,true));
 addMapLabel('Water Taxi to Mango Deck',{text:'Water Taxi to Mango Deck',x:1229.3,y:1047.25,rotate:9.5},1229.3,1047.25,()=>openCard(DATA.mango,true));
+const waterTaxiPremiumLabel=getPremiumLabel('Water Taxi to Mango Deck');
+if(waterTaxiPremiumLabel) waterTaxiPremiumLabel.classList.add('water-taxi-premium');
 
 document.getElementById('mangoRoute').addEventListener('click',()=>openCard(DATA.mango,true));
 const waterRoutePath=document.getElementById('waterRoutePath');
