@@ -116,7 +116,7 @@ body.debug .route-hotspot{outline:2px dashed #ffea00;background:rgba(255,234,0,.
 .map-hint-overlay{position:absolute;right:64px;top:10px;z-index:45;padding:9px 12px;color:#28439b;font-size:13px;font-weight:800;line-height:1.1;white-space:nowrap}
 .map-location-pill{position:static;z-index:45;width:128px;min-height:34px;box-sizing:border-box;padding:8px 12px;font-size:10px;color:#28439b!important;font-weight:800;white-space:nowrap;display:none;align-items:center;justify-content:center;gap:5px;align-self:flex-start}
 .map-location-pill.is-visible{display:inline-flex}
-.map-location-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 6px;animation:liveLocationPulse .5s ease-in-out infinite}
+.map-location-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 6px;animation:liveLocationPulse 1s ease-in-out infinite}
 @keyframes liveLocationPulse{0%,100%{opacity:.38;transform:scale(.72)}50%{opacity:1;transform:scale(1.35)}}
 
 .cruzy-map-cta{
@@ -903,7 +903,7 @@ mangoBtn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v7"
 mangoBtn.addEventListener('click',()=>openCard(DATA.mango,true));
 mapCanvas.appendChild(mangoBtn);
 addMapLabel('Mango Deck',{text:'Mango Deck',x:1580,y:285},1731.95,358.11,()=>openCard(DATA.mango,true));
-addMapLabel('Water Taxi to Mango Deck',{text:'Water Taxi to Mango Deck',x:1189.3,y:1047.25,rotate:8.9},1189.3,1047.25,()=>openCard(DATA.mango,true));
+addMapLabel('Water Taxi to Mango Deck',{text:'Water Taxi to Mango Deck',x:1189.3,y:1047.25,rotate:9.1},1189.3,1047.25,()=>openCard(DATA.mango,true));
 
 document.getElementById('mangoRoute').addEventListener('click',()=>openCard(DATA.mango,true));
 const waterRoutePath=document.getElementById('waterRoutePath');
